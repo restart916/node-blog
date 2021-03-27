@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <!-- Bulma CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script>
+
+      function update_card(written_id) {
+        
+        let title       = $("#title").val()
+        let image_url   = $("#image").val()
+        let description = $("#description").val()
+        let user        = $("#user").val()
+        let password    = $("#password").val()
+        $.ajax({
+          type : "post",
+          url: '/api/update',
+          data: {
+                "writtensId" : written_id,
+                "title" : title,
+                 "image_url" : image_url,
+                 "description" : description,
+                 "user" : user,
+                 "password" : password          
+        },
+          success: function(response) {
+            if (response["result"] == true){
+              alert("수정되었습니다.")
+              window.location.href = '/'
+            } else{
+              alert("비밀번호가 틀렸습니다.")
+              window.location.reload()
+            }
+          }
+        })
+             
+        }
+    </script>
+    <style>
+      .input_box{
+        width: 500px;
+        margin :0 auto;
+        padding: 30px;
+      }
+
+      h1{
+        margin-bottom :10px;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+
+      .buttons {
+       margin-top : 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="input_box">
+      <div>
+        <h1>image</h1>
+        <input id="image" class="input" type="text" value= "<%=written.image_url%>"  placeholder="image_url">
+      </div>
+      <div>
+        <h1>사용자</h1>
+        <input id="user" class="input" type="text" value= "<%=written.user%>" placeholder="사용자 이름">
+      </div>
+      <div>
+          <h1>title</h1>
+          <input id="title" class="input" type="text" value= "<%=written.title%>" placeholder="Text input">
+      </div>
+      <div class="field">
+          <div class="control">
+            <h1>description</h1>
+            <textarea id="description" class="textarea is-large" placeholder="description"><%=written.description%></textarea>
+          </div>
+      </div>
+      <div>
+        <h1>password</h1>
+        <input id="password" class="password" type="password" placeholder="password">
+      </div>
+      <div class="buttons">
+        <button type="button" onclick="update_card('<%=written.writtensId%>')" class="btn btn-info">저장</button>
+      </div>
+    </div>
+
+  </body>
+</html>

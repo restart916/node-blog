@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <!-- Bulma CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script>
+      $(document).ready(function (){
+            card();
+            $("#categorySelect").on("change", function () {
+                card($(this).val())
+            })
+        });
+
+        function delete_card(written_id) {
+            let password = prompt('비밀빈호를 입력하세여', 'password')
+            $.ajax({
+              type : "DELETE",
+              url: '/api/written',
+              data: {"id" : written_id,
+                    "password":password},
+              success: function(response) {
+                alert(response["result"])
+                window.location.reload(true)
+            
+          }
+        })}
+
+      function card(category) {
+        $("#cards-box").empty()
+        $.ajax({
+          type : "GET",
+          url: `/api/written${category ? "?category=" + category : ""}`,
+          data: {},
+          success: function(response) {
+            let writtens = response["writtens"]
+            console.log(response["writtens"])
+            for (let written of writtens) {
+              let temp_html = `
+                                                
+                                                  <div class="card">
+                                                    <div class="card-info" onclick="location.href='/detail?writtensId=${written["writtensId"]}'">
+                                                      <img class="card-img-top"
+                                                          src=${written["image_url"]}
+                                                          alt="Card image cap">
+                                                      <div class="card-body">
+                                                          <p>${written["date"]}</p>
+                                                          <span class="badge bg-info text-dark" id="cateogry">${written["category"]}</span>
+                                                          <p class="title">${written["title"]}</p>
+                                                          <p class="description">${written["description"]}</p>
+                                                      </div>
+                                                    </div>
+                                                    <div class="buttons">
+                                                      <div>
+                                                        <button type="button" onclick="location.href='/update/${written["writtensId"]}'" class="btn btn-info">수정</button>
+                                                        <button type="button" onclick="delete_card(${written["writtensId"]})" class="btn btn-light">삭제</button>
+                                                      </div> 
+                                                    </div>
+                                                  </div>
+                                               
+                                            `
+               $("#cards-box").append(temp_html)
+            }
+          }
+        })
+             
+        }
+    </script>
+    <style>
+      * {
+        font-family: 'Nanum Gothic', sans-serif;
+      }
+      #navbar{
+        margin-bottom: 30px;
+      }
+      .select-group{
+        width: 500px;
+        margin : 30px 60px;
+      }
+
+      .card {
+        display : flex;
+        flex-direction: column;
+        align-items: center;
+        margin :30px;
+        
+      }
+
+      .card-img-top {
+        width: 35rem;
+        height: 18rem;
+
+      }
+
+      #cateogry{
+        margin : 10px 0 10px 0;
+      }
+
+      .buttons {
+        display : flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 20px;
+      }
+      .title {
+        font-size: 20px;
+      }
+
+      .description{
+        font-size: 20px;
+        max-height: 8.8em;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbar">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create">새글쓰기</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  
+    <div class="select-group">
+      <div class="form-group row mr-0">
+          <label for="categorySelect" class="col-4 col-form-label">카테고리</label>
+          <select class="form-control col-8" id="categorySelect">
+              <option value="" selected>전체</option>
+              <option value="여행">여행</option>
+              <option value="개발">개발</option>
+              <option value="음식">음식</option>
+              <option value="운동">운동</option>
+          </select>
+      </div>
+  </div>
+
+    <div id="cards-box" class="card-columns"></div>
+    
+  </body>
+</html>
